@@ -1,115 +1,123 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const colors = ["red", "blue", "green", "yellow"];
-  let gamePattern = [];
-  let userPattern = [];
-  let level = 0;
-  let started = false;
-  let highScore = 0;
-  let strictMode = false;
-  let delay = 800; // delay between steps (will decrease)
+// Listing of all the possible colors
 
-  const levelTitle = document.getElementById("level-title");
-  const startBtn = document.getElementById("start-btn");
-  const strictToggle = document.getElementById("strict-toggle");
-  const highScoreDisplay = document.getElementById("high-score");
-  const statusText = document.getElementById("status");
+const buttonColors = ["red", "blue", "green", "yellow"];
 
-  function nextSequence() {
-    userPattern = [];
-    level++;
-    delay = Math.max(300, 800 - level * 30); // Increase speed
-    updateUI();
+// Game state
 
-    const randomColor = colors[Math.floor(Math.random() * 4)];
-    gamePattern.push(randomColor);
-    playSequence();
-  }
+let gamePattern = [];         //    Stores the sequence the game generates
+let userClickedPattern = [];  // Stores the sequence the user clicks
+let level = 0;
+let started = false;
+let waitingForUser = false;
 
-  function playSequence() {
-    let i = 0;
-    const interval = setInterval(() => {
-      const color = gamePattern[i];
-      flashButton(color);
-      playSound(color);
-      i++;
-      if (i >= gamePattern.length) clearInterval(interval);
-    }, delay);
-  }
+// dom elements
+const levelEl = document.querySelector(".level");
+const statusEl = document.querySelector(".status");
+const startBtn = document.querySelector(".start-btn");
+const colorButtons = document.querySelectorAll(".color");
 
-  function flashButton(color) {
-    const button = document.getElementById(color);
-    button.classList.add("pressed");
-    setTimeout(() => button.classList.remove("pressed"), 200);
-  }
+// Start the game on button click
+startBtn.addEventListener("click", startGame);
 
-  function playSound(name) {
-    const audio = new Audio(`sounds/${name}.mp3`);
-    audio.play();
-  }
+function startGame() {
+  // preventing starting again if already started
+  if (started) return;
 
-  function checkAnswer(index) {
-    if (userPattern[index] !== gamePattern[index]) {
-      playSound("wrong");
-      levelTitle.textContent = "Game Over!";
-      statusText.textContent = "You pressed the wrong button.";
+  // reset game state
+  started = true;
+  level = 0;
+  gamePattern = [];
+  userClickedPattern = [];
+  statusEl.textContent = "Watch the pattern...";
+  levelEl.textContent = "Level 0";
 
-      if (strictMode) {
-        startBtn.textContent = "Restart";
-        started = false;
-        return;
-      } else {
-        statusText.textContent += " Replaying sequence.";
-        setTimeout(playSequence, 1000);
-        userPattern = [];
-        return;
-      }
-    }
-
-    if (userPattern.length === gamePattern.length) {
-      if (level > highScore) {
-        highScore = level;
-        highScoreDisplay.textContent = `High Score: ${highScore}`;
-      }
-      setTimeout(nextSequence, 1000);
-    }
-  }
-
-  function updateUI() {
-    levelTitle.textContent = `Level ${level}`;
-    statusText.textContent = "";
-  }
-
-  function startGame() {
-    level = 0;
-    gamePattern = [];
-    started = true;
-    delay = 800;
-    startBtn.textContent = "Restart";
+  // Starting with the first sequence
+  setTimeout(() => {
     nextSequence();
-  }
+  }, 500);
+}
 
-  startBtn.addEventListener("click", () => {
-    if (!started) {
-      startGame();
-    } else {
-      startGame(); // Restart game
+function nextSequence() {
+  // Reseting user input for new level
+  userClickedPattern = [];
+  level++;
+  levelEl.textContent = `Level ${level}`;
+  statusEl.textContent = "Watch the pattern...";
+
+  // it willGenerate a random color and add it to the sequence
+  const randomColor = buttonColors[Math.floor(Math.random() * 4)];
+  gamePattern.push(randomColor);
+
+  // showing  sequence to user
+  playSequence();
+}
+
+function playSequence() {
+  let delay = 0;
+  waitingForUser = false;
+
+  // Animate each color in the sequence with a delay
+  gamePattern.forEach((color) => {
+    setTimeout(() => {
+      animatePress(color);
+    }, delay);
+    delay += 600;
+  });
+
+  // After showing the full sequence, wait for user input
+  setTimeout(() => {
+    waitingForUser = true;
+    statusEl.textContent = "Your turn!";
+  }, delay);
+}
+
+function animatePress(color) {
+  const button = document.querySelector(`.color.${color}`);
+  button.classList.add("active");
+  setTimeout(() => button.classList.remove("active"), 300);
+}
+
+// Handle user clicks on color buttons
+
+colorButtons.forEach(button => {
+  button.addEventListener("click", function () {
+
+
+    // Ignore clicks if it's not user's turn or game hasn't started
+    if (!waitingForUser || !started) return;
+
+    // Get the clicked color from its class
+    const userColor = this.classList[1];
+    userClickedPattern.push(userColor);
+    animatePress(userColor);
+
+
+
+    // Check the current step of the pattern
+    const currentStep = userClickedPattern.length - 1;
+
+    // If user clicked the wrong color
+    if (userColor !== gamePattern[currentStep]) {
+      gameOver();
+      return;
     }
-  });
 
-  strictToggle.addEventListener("click", () => {
-    strictMode = !strictMode;
-    strictToggle.textContent = `Strict Mode: ${strictMode ? "ON" : "OFF"}`;
-  });
-
-  document.querySelectorAll(".btn").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      if (!started) return;
-
-      const color = btn.id;
-      userPattern.push(color);
-      flashButton(color);
-      playSound(color);
-      checkAnswer(userPattern.length - 1);
-    });
+    // If user completed the current level correctly
+    if (userClickedPattern.length === gamePattern.length) {
+      waitingForUser = false;
+      statusEl.textContent = "Correct!";
+      setTimeout(() => nextSequence(), 1000);
+    }
   });
 });
+
+function gameOver() {
+  // Display game over message and reset state
+
+  statusEl.textContent = "Game Over! Click Start to try again.";
+  levelEl.textContent = "Level 0";
+  started = false;
+  waitingForUser = false;
+  gamePattern = [];
+  userClickedPattern = [];
+}

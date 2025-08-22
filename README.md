@@ -49,3 +49,65 @@ As a user
 I want the buttons to be visually distinct and responsive
 So that I can easily follow the game even on different screen sizes
 
+
+sudo code: 
+
+1. intialaiztion:
+
+DEFINE colorOptions = ["red", "blue", "green", "yellow"]
+INITIALIZE gamePattern = []
+INITIALIZE userPattern = []
+INITIALIZE level = 0
+INITIALIZE gameStarted = false
+
+2. start game:
+
+ON "Start" button click:
+    IF game has not started:
+        RESET gamePattern, userPattern, level
+        CALL nextSequence()
+        SET gameStarted = true
+
+3. game sequence: 
+
+INCREMENT level by 1
+DISPLAY "Level" on screen
+
+SELECT random color from colorOptions
+APPEND selected color to gamePattern
+
+ANIMATE selected color (flash, sound, etc.)
+CLEAR userPattern
+
+4. user interaction: 
+
+ON user click on color button:
+    GET clickedColor
+    APPEND clickedColor to userPattern
+
+    ANIMATE clickedColor (press effect, sound)
+
+    CALL checkAnswer(index of last clicked color)
+
+5. check awnser: 
+
+IF userPattern[currentIndex] == gamePattern[currentIndex]:
+    IF userPattern length == gamePattern length:
+        WAIT for a second
+        CALL nextSequence()
+ELSE:
+    PLAY "wrong" sound
+    DISPLAY "Game Over"
+    FLASH screen red
+    RESET game
+
+6. Reset game: 
+
+RESET level to 0
+RESET gamePattern and userPattern
+SET gameStarted = false
+DISPLAY "Press Start to Begin"
+
+
+
+
