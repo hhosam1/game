@@ -30,7 +30,7 @@ body {
 }
 
 .start-btn {
-  background-color: #0f8;
+  background-color: rgb(72, 0, 255);
   color: #111;
   padding: 10px 20px;
   border: none;
@@ -79,7 +79,8 @@ body {
 
 .color:active,
 .color.active {
-  opacity: 1;
+  opacity: 20;
   transform: scale(1.05);
-  box-shadow: 0 0 15px white;
+  box-shadow: 20 10 50px rgb(204, 179, 179);
+  border-radius: 50;
 }
