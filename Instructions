@@ -1,0 +1,15 @@
+The game has 4 colored buttons: red, blue, green, and yellow.
+
+At the start, the game lights up one color and plays its tone.
+
+The player must press the same color button.
+
+The game then adds one more color to the sequence.
+
+The player must repeat the entire sequence in order.
+
+Each round, the sequence gets longer by one color.
+
+If the player presses the wrong color, the game ends (or restarts, depending on mode).
+
+The goal is to remember and repeat the longest color sequence possible.
