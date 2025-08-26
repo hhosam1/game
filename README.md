@@ -111,3 +111,31 @@ DISPLAY "Press Start to Begin"
 
 
 
+
+simon says game: 
+
+
+Simon Says: Color Memory Challenge is a fast-paced memory game where players must repeat an increasingly complex sequence of colored lights and sounds. The game begins with a single color lighting up, and the player must click the matching color. With each round, a new color is added to the sequence, testing the player’s memory and focus. The goal is to see how long you can keep up before making a mistake!
+
+
+
+
+list of technologies used :
+
+HTML 
+CSS
+JS
+render for deplyment
+
+
+
+
+future plans or enhancment:
+
+include users and leaderboard
+include more modes 
+include clicking sound to make the game more interactive  
+
+
+
+
